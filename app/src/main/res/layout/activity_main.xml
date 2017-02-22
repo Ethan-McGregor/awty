@@ -1,0 +1,76 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/messageText"
+            android:text="Message Text"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/messageText"
+            android:id="@+id/message"
+            android:layout_marginBottom="20dp"
+            android:padding="20dp"
+            android:background="#528881" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/phoneNumberText"
+            android:text="Phone Number "
+            android:layout_below="@+id/message"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/phoneNumberText"
+            android:id="@+id/phoneNumber"
+            android:layout_marginBottom="20dp"
+            android:padding="20dp"
+            android:background="#528881"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/intervalText"
+            android:text="Interval between texts"
+            android:layout_below="@+id/phoneNumber"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/intervalText"
+            android:id="@+id/interval"
+            android:layout_marginBottom="20dp"
+            android:padding="20dp"
+            android:background="#528881"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/interval"
+            android:id="@+id/strButton"
+            android:text="Start"
+            android:layout_marginTop="50dp"
+            android:padding="30dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>
