@@ -7,12 +7,23 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class Alarm extends BroadcastReceiver {
+    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS =0 ;
+
+    private String text;
+    private String number;
+    private Context contexts;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String text = intent.getStringExtra("text");
-        String number = intent.getStringExtra("phone");
+        contexts = context;
+         text = intent.getStringExtra("text");
+         number = intent.getStringExtra("phone");
         Toast.makeText(context, number + ": " + text, Toast.LENGTH_SHORT).show();
+//        SmsManager smsManager = SmsManager.getDefault();
+//        smsManager.sendTextMessage(number, null, text, null, null);
+
         Log.v("ALARM","fired");
     }
+
+
 }

@@ -1,10 +1,16 @@
 package awty.ethanm4.washington.edu.awty;
+
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +22,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean running = false;
     private  boolean alarmActive;
     private boolean validated;
+
+    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS =0 ;
+
+    String phoneNo;
+    String message;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, Alarm.class);
                 intent.putExtra("text", messageEntry.getText().toString());
                 intent.putExtra("phone", phoneNumberEntry.getText().toString());
+                phoneNo =  phoneNumberEntry.getText().toString();
+                message = messageEntry.getText().toString();
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 1000, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 validated = validate();
 
@@ -57,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                         EditText intervalEntry = (EditText)findViewById(R.id.interval);
                         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), (Integer.parseInt(intervalEntry.getText().toString()) * 1000 * 60), pendingIntent);
                         strButton.setText("Stop");
+                        sendSMSMessage();
                     }
                 } else {
                     running = false;
@@ -102,5 +116,47 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         }
+
+
+
+    protected void sendSMSMessage() {
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.SEND_SMS)) {
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.SEND_SMS},
+                        MY_PERMISSIONS_REQUEST_SEND_SMS);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_SEND_SMS: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    SmsManager smsManager = SmsManager.getDefault();
+                    smsManager.sendTextMessage(phoneNo, null, message, null, null);
+                    Toast.makeText(getApplicationContext(), "SMS sent.",
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "SMS faild, please try again.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+        }
+
+    }
+
+
+
+
+
 
 }
