@@ -5,17 +5,13 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,24 +19,25 @@ public class MainActivity extends AppCompatActivity {
     private  boolean alarmActive;
     private boolean validated;
 
-    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS =0 ;
 
-    String phoneNo;
-    String message;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         final Button strButton = (Button)findViewById(R.id.strButton);
         Intent activeIntent = new Intent(MainActivity.this, Alarm.class);
 
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
+
+
         //checks if alarm is already running when app is opened
-         alarmActive = (PendingIntent.getBroadcast(MainActivity.this, 0, activeIntent, PendingIntent.FLAG_NO_CREATE) != null);
+        alarmActive = (PendingIntent.getBroadcast(MainActivity.this, 0, activeIntent, PendingIntent.FLAG_NO_CREATE) != null);
+
 
         //Waits for start/stop button to be clicked
         strButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
 
@@ -55,10 +52,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, Alarm.class);
                 intent.putExtra("text", messageEntry.getText().toString());
                 intent.putExtra("phone", phoneNumberEntry.getText().toString());
-                phoneNo =  phoneNumberEntry.getText().toString();
-                message = messageEntry.getText().toString();
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 1000, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 validated = validate();
+
 
                 //if alarm is not running, start it
                 if (!running) {
@@ -70,92 +66,65 @@ public class MainActivity extends AppCompatActivity {
                         EditText intervalEntry = (EditText)findViewById(R.id.interval);
                         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), (Integer.parseInt(intervalEntry.getText().toString()) * 1000 * 60), pendingIntent);
                         strButton.setText("Stop");
-                        sendSMSMessage();
                     }
+
                 } else {
+
                     running = false;
                     strButton.setText("Start");
                     alarmManager.cancel(pendingIntent);
                     pendingIntent.cancel();
                 }
+
             }
+
         });
 
         // changes text of button if alarm is active
         if (alarmActive) {
             strButton.setText("Stop");
         }
+
     }
 
+
     //Validates all user inputs
+
     public boolean validate() {
         EditText message = (EditText)findViewById(R.id.message);
         EditText phoneNumber = (EditText)findViewById(R.id.phoneNumber);
         EditText interval = (EditText)findViewById(R.id.interval);
-        
+
+
         //if message is larger then 0
         if (message.getText().length() == 0) {
             Toast.makeText(MainActivity.this,"Please enter a message", Toast.LENGTH_SHORT).show();
             return false;
-            
+
+
+
             //if phone number is larger then 0
         } else if (phoneNumber.length() == 0) {
             Toast.makeText(MainActivity.this,"Please enter a Phone number", Toast.LENGTH_SHORT).show();
             return false;
-            
+
+
             // if interval is larger then 0
         } else if (Integer.parseInt(interval.getText().toString()) < 0) {
             Toast.makeText(MainActivity.this,"Please enter a interval", Toast.LENGTH_SHORT).show();
             return false;
 
+
             // makes usre phone number is proper format
         } else if(!phoneNumber.getText().toString().matches("\\d{3}\\d{3}\\d{4}")) {
             Toast.makeText(MainActivity.this,"Please Enter a valid phone number", Toast.LENGTH_SHORT).show();
             return false;
+
         }
 
-            return true;
-        }
-
-
-
-    protected void sendSMSMessage() {
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.SEND_SMS)) {
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        MY_PERMISSIONS_REQUEST_SEND_SMS);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_SEND_SMS: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage(phoneNo, null, message, null, null);
-                    Toast.makeText(getApplicationContext(), "SMS sent.",
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "SMS faild, please try again.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-            }
-        }
+        return true;
 
     }
-
-
-
 
 
 
